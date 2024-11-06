@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malicious URL Detector</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Malicious URL Detection</h2>
+        <div class="form-group">
+            <label for="urlInput">Enter a URL:</label>
+            <input type="text" class="form-control" id="urlInput" placeholder="http://example.com">
+        </div>
+        <button class="btn btn-primary" onclick="checkUrl()">Check URL</button>
+        <div class="mt-4" id="result"></div>
+    </div>
+
+    <script>
+        function checkUrl() {
+            const url = document.getElementById('urlInput').value;
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'url=' + encodeURIComponent(url)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<strong>${data.url}</strong> is <span class="text-${data.result === 'unsafe' ? 'danger' : 'success'}">${data.result}</span>`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<span class="text-danger">Error: Unable to check the URL.</span>';
+            });
+        }
+    </script>
+</body>
+</html>
